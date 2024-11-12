@@ -1,0 +1,40 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id        Int      @id @default(autoincrement())
+  email     String   @unique
+  name      String
+  password  String
+  custom    String 
+  createdAt DateTime @default(now())
+
+  studyChats      StudyChat[]
+  conventionChats ConventionChat[]
+}
+
+model StudyChat {
+  id        Int      @id @default(autoincrement())
+  userId    Int
+  role      String  
+  content   String
+  createdAt DateTime @default(now())
+  
+  user      User      @relation(fields: [userId], references: [id])
+}
+
+model ConventionChat {
+  id        Int      @id @default(autoincrement())
+  userId    Int
+  role      String 
+  content   String
+  createdAt DateTime @default(now())
+
+  user      User      @relation(fields: [userId], references: [id])
+}
