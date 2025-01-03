@@ -15,9 +15,20 @@ model User {
   custom    String? 
   createdAt DateTime @default(now())
 
+  refreshTokens RefreshToken[]  
   studyChats      StudyChat[]
   conventionChats ConventionChat[]
 }
+
+model RefreshToken {
+  id        Int      @id @default(autoincrement())
+  token     String   @unique
+  userId    Int
+  createdAt DateTime @default(now())
+
+  user      User     @relation(fields: [userId], references: [id])
+}
+
 
 model StudyChat {
   id        Int      @id @default(autoincrement())
