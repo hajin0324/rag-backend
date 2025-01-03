@@ -9,11 +9,13 @@ import {
   findUser,
   saveRefreshToken,
 } from "../models/user.model";
+import { HttpException } from "../utils/httpException";
+import { StatusCodes } from "http-status-codes";
 
 dotenv.config();
 
 if (!process.env.JWT_SECRET || !process.env.REFRESH_JWT_SECRET) {
-  throw new Error("Not defined in environment variables");
+  throw new HttpException(StatusCodes.INTERNAL_SERVER_ERROR, "Not defined in environment variables");
 }
 
 const SALT_ROUNDS = 10;
@@ -24,7 +26,7 @@ export const registerUser = async (email: string, name: string, password: string
   const user = await findUser(email);
 
   if (user) {
-    throw new Error("이미 가입된 이메일입니다.");
+    throw new HttpException(StatusCodes.BAD_REQUEST, "이미 가입된 이메일입니다.");
   }
 
   const hashedPassword = await bcrypt.hash(password, SALT_ROUNDS);
@@ -36,13 +38,13 @@ export const loginUser = async (email: string, password: string) => {
   const user = await findUser(email);
 
   if (!user) {
-    throw new Error("이메일 또는 비밀번호가 올바르지 않습니다.");
+    throw new HttpException(StatusCodes.UNAUTHORIZED, "이메일 또는 비밀번호가 올바르지 않습니다.");
   }
 
   const isPasswordValid = await bcrypt.compare(password, user.password);
 
   if (!isPasswordValid) {
-    throw new Error("이메일 또는 비밀번호가 올바르지 않습니다.");
+    throw new HttpException(StatusCodes.UNAUTHORIZED, "이메일 또는 비밀번호가 올바르지 않습니다.");
   }
 
   await deleteRefreshTokenById(user.id);
@@ -60,7 +62,7 @@ export const refreshAccessToken = async (refreshToken: string) => {
   const token = await findRefreshToken(refreshToken);
 
   if (!token) {
-    throw new Error("유효하지 않은 Refresh Token입니다.");
+    throw new HttpException(StatusCodes.UNAUTHORIZED, "유효하지 않은 Refresh Token입니다.");
   }
 
   return jwt.sign({ id: payload.id, email: payload.email }, JWT_SECRET, { expiresIn: "1h" });
