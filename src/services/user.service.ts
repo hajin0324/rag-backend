@@ -1,7 +1,14 @@
 import dotenv from "dotenv";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
-import { createUser, deleteRefreshToken, findRefreshToken, findUser, saveRefreshToken } from "../models/user.model";
+import {
+  createUser,
+  deleteRefreshToken,
+  deleteRefreshTokenById,
+  findRefreshToken,
+  findUser,
+  saveRefreshToken,
+} from "../models/user.model";
 
 dotenv.config();
 
@@ -37,6 +44,8 @@ export const loginUser = async (email: string, password: string) => {
   if (!isPasswordValid) {
     throw new Error("이메일 또는 비밀번호가 올바르지 않습니다.");
   }
+
+  await deleteRefreshTokenById(user.id);
 
   const accessToken = jwt.sign({ email: user.email, id: user.id }, JWT_SECRET, { expiresIn: "1h" });
   const refreshToken = jwt.sign({ email: user.email, id: user.id }, REFRESH_JWT_SECRET, { expiresIn: "7d" });
