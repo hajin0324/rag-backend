@@ -16,8 +16,15 @@ export const findUser = async (email: string) => {
   return await prisma.user.findUnique({
     where: { email },
     select: {
+      id: true,
       email: true,
       password: true,
     },
+  });
+};
+
+export const saveRefreshToken = async (userId: number, token: string) => {
+  return prisma.refreshToken.create({
+    data: { userId, token },
   });
 };

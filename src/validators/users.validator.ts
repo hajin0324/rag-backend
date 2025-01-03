@@ -21,3 +21,4 @@ export const passwordValidate = body("password")
   .withMessage("비밀번호는 영문, 숫자를 포함해야 합니다.");
 
 export const registerValidate = [emailValidate, nameValidate, passwordValidate];
+export const loginValidate = [emailValidate, passwordValidate];
