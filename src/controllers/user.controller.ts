@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
 import { StatusCodes } from "http-status-codes";
-import { loginUser, refreshAccessToken, registerUser } from "../services/user.service";
+import { loginUser, logoutUser, refreshAccessToken, registerUser } from "../services/user.service";
 
 const setRefreshTokenCookie = (res: Response, refreshToken: string) => {
   res.cookie("refreshToken", refreshToken, {
@@ -32,4 +32,17 @@ export const refresh = async (req: Request, res: Response) => {
   const accessToken = await refreshAccessToken(refreshToken);
 
   res.status(StatusCodes.OK).json({ message: "Access Token 재발급 성공", accessToken });
+};
+
+export const logout = async (req: Request, res: Response): Promise<void> => {
+  const refreshToken = req.cookies.refreshToken;
+  await logoutUser(refreshToken);
+
+  res.clearCookie("refreshToken", {
+    httpOnly: true,
+    secure: process.env.NODE_ENV === "production",
+    sameSite: "strict",
+  });
+
+  res.status(StatusCodes.OK).json({ message: "로그아웃 성공" });
 };

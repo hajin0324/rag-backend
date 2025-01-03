@@ -1,7 +1,7 @@
 import dotenv from "dotenv";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
-import { createUser, findRefreshToken, findUser, saveRefreshToken } from "../models/user.model";
+import { createUser, deleteRefreshToken, findRefreshToken, findUser, saveRefreshToken } from "../models/user.model";
 
 dotenv.config();
 
@@ -55,4 +55,8 @@ export const refreshAccessToken = async (refreshToken: string) => {
   }
 
   return jwt.sign({ id: payload.id, email: payload.email }, JWT_SECRET, { expiresIn: "1h" });
+};
+
+export const logoutUser = async (refreshToken: string) => {
+  await deleteRefreshToken(refreshToken);
 };
