@@ -1,4 +1,4 @@
-import { body } from "express-validator";
+import { body, cookie } from "express-validator";
 
 export const emailValidate = body("email")
   .notEmpty()
@@ -19,6 +19,8 @@ export const passwordValidate = body("password")
   .withMessage("비밀번호는 최소 8자 이상이어야 합니다.")
   .matches(/^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d@$!%*?&]{8,}$/)
   .withMessage("비밀번호는 영문, 숫자를 포함해야 합니다.");
+
+export const refreshTokenValidate = cookie("refreshToken").notEmpty().withMessage("Refresh Token이 없습니다.");
 
 export const registerValidate = [emailValidate, nameValidate, passwordValidate];
 export const loginValidate = [emailValidate, passwordValidate];

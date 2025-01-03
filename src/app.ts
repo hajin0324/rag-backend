@@ -1,10 +1,13 @@
 import express, { Express } from "express";
-export const app: Express = express();
 import dotenv from "dotenv";
+import cookieParser from "cookie-parser";
 import cors from "cors";
 
-app.use(express.json());
+export const app: Express = express();
+
 dotenv.config();
+app.use(express.json());
+app.use(cookieParser());
 
 const corsOptions = {
   origin: ["http://localhost:5173"],

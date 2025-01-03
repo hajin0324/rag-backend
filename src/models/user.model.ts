@@ -28,3 +28,9 @@ export const saveRefreshToken = async (userId: number, token: string) => {
     data: { userId, token },
   });
 };
+
+export const findRefreshToken = async (token: string) => {
+  return prisma.refreshToken.findUnique({
+    where: { token },
+  });
+};

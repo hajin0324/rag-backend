@@ -1,7 +1,7 @@
 import dotenv from "dotenv";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
-import { createUser, findUser, saveRefreshToken } from "../models/user.model";
+import { createUser, findRefreshToken, findUser, saveRefreshToken } from "../models/user.model";
 
 dotenv.config();
 
@@ -44,4 +44,15 @@ export const loginUser = async (email: string, password: string) => {
   await saveRefreshToken(user.id, refreshToken);
 
   return { accessToken, refreshToken };
+};
+
+export const refreshAccessToken = async (refreshToken: string) => {
+  const payload = jwt.verify(refreshToken, REFRESH_JWT_SECRET) as { id: number; email: string };
+  const token = await findRefreshToken(refreshToken);
+
+  if (!token) {
+    throw new Error("유효하지 않은 Refresh Token입니다.");
+  }
+
+  return jwt.sign({ id: payload.id, email: payload.email }, JWT_SECRET, { expiresIn: "1h" });
 };
