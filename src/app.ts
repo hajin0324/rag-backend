@@ -9,6 +9,8 @@ dotenv.config();
 app.use(express.json());
 app.use(cookieParser());
 
+const API_PREFIX = "/api/v1";
+
 const corsOptions = {
   origin: ["http://localhost:5173"],
   methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
@@ -19,9 +21,11 @@ const corsOptions = {
 app.use(cors(corsOptions));
 
 import { router as userRouter } from "./routes/user.route";
+import { router as chatRouter } from "./routes/chat.route";
 import { errorMiddleware } from "./middlewares/errorMiddleware";
 
-app.use("/users", userRouter);
+app.use(`${API_PREFIX}/users`, userRouter);
+app.use(`${API_PREFIX}/chats`, chatRouter);
 
 app.use(errorMiddleware);
 
