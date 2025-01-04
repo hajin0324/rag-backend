@@ -16,8 +16,8 @@ model User {
   createdAt DateTime @default(now())
 
   refreshTokens RefreshToken[]  
-  studyChats      StudyChat[]
-  conventionChats ConventionChat[]
+  studyChatHistory StudyChatHistory[]
+  customChatHistory CustomChatHistory[]
 }
 
 model RefreshToken {
@@ -29,23 +29,42 @@ model RefreshToken {
   user      User     @relation(fields: [userId], references: [id])
 }
 
+model StudyChatHistory {
+  id        Int         @id @default(autoincrement())
+  userId    Int
+  title     String      @default("New Chat")
+  createdAt DateTime    @default(now())
+
+  user      User        @relation(fields: [userId], references: [id])
+  messages  StudyChat[] 
+}
 
 model StudyChat {
   id        Int      @id @default(autoincrement())
-  userId    Int
+  historyId Int
   role      String  
   content   String
   createdAt DateTime @default(now())
   
-  user      User      @relation(fields: [userId], references: [id])
+  studyChatHistory StudyChatHistory @relation(fields: [historyId], references: [id])
 }
 
-model ConventionChat {
-  id        Int      @id @default(autoincrement())
+model CustomChatHistory {
+  id        Int              @id @default(autoincrement())
   userId    Int
-  role      String 
-  content   String
-  createdAt DateTime @default(now())
+  title     String           @default("New Custom Chat") 
+  createdAt DateTime         @default(now())
 
-  user      User      @relation(fields: [userId], references: [id])
+  user      User             @relation(fields: [userId], references: [id])
+  messages  CustomChat[] 
+}
+
+model CustomChat {
+  id                   Int                    @id @default(autoincrement())
+  historyId            Int
+  role                 String
+  content              String
+  createdAt            DateTime              @default(now())
+
+  customChatHistory CustomChatHistory @relation(fields: [historyId], references: [id])
 }
