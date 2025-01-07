@@ -51,3 +51,24 @@ export const findCustomChats = async (historyId: number) => {
     orderBy: { createdAt: "asc" },
   });
 };
+
+export const findCustomInfo = async (userId: number) => {
+  return await prisma.user.findUniqueOrThrow({
+    where: { id: userId },
+    select: {
+      custom: true,
+    },
+  });
+};
+
+export const saveStudyChat = async (chatId: number, role: string, content: string) => {
+  return await prisma.studyChat.create({
+    data: { historyId: chatId, role, content },
+  });
+};
+
+export const saveCustomChat = async (chatId: number, role: string, content: string) => {
+  return await prisma.studyChat.create({
+    data: { historyId: chatId, role, content },
+  });
+};
