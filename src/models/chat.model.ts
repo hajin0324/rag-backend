@@ -27,6 +27,14 @@ export const findStudyChats = async (historyId: number) => {
   });
 };
 
+export const createStudyChat = async (userId: number) => {
+  return await prisma.studyChatHistory.create({
+    data: {
+      userId,
+    },
+  });
+};
+
 export const findCustomChatHistory = async (userId: number) => {
   return await prisma.customChatHistory.findMany({
     where: { userId },
@@ -49,6 +57,14 @@ export const findCustomChats = async (historyId: number) => {
       createdAt: true,
     },
     orderBy: { createdAt: "asc" },
+  });
+};
+
+export const createCustomChat = async (userId: number) => {
+  return await prisma.customChatHistory.create({
+    data: {
+      userId,
+    },
   });
 };
 

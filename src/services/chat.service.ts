@@ -1,5 +1,7 @@
 import { StatusCodes } from "http-status-codes";
 import {
+  createStudyChat,
+  createCustomChat,
   findCustomChatHistory,
   findCustomChats,
   findCustomInfo,
@@ -22,12 +24,18 @@ export const getChatHistory = async (userId: number, type: string) => {
 
     if (history.length > 0) {
       chats = await findStudyChats(history[0].id);
+    } else {
+      const sInfo = await createStudyChat(userId);
+      history = [{ id: sInfo.id, title: sInfo.title, updatedAt: sInfo.updatedAt }];
     }
   } else if (type === "custom") {
     history = await findCustomChatHistory(userId);
 
     if (history.length > 0) {
       chats = await findCustomChats(history[0].id);
+    } else {
+      const cInfo = await createCustomChat(userId);
+      history = [{ id: cInfo.id, title: cInfo.title, updatedAt: cInfo.updatedAt }];
     }
   }
 
