@@ -17,3 +17,5 @@ export const chatIdValidate = param("chatId")
 export const questionValidate = body("question").notEmpty().withMessage("질문을 입력해주세요.");
 
 export const chatValidate = [typeValidate, chatIdValidate, questionValidate];
+
+export const chatHistoryValidate = [typeValidate, chatIdValidate];

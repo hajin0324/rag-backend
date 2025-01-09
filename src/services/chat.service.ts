@@ -42,6 +42,19 @@ export const getChatHistory = async (userId: number, type: string) => {
   return { history, chats };
 };
 
+export const getChatMessages = async (userId: number, type: string, chatId: number) => {
+  const history = type === "study" ? await findStudyChatHistory(userId) : await findCustomChatHistory(userId);
+  const isValidChat = history.some((chat) => chat.id === chatId);
+
+  if (!isValidChat) {
+    throw new HttpException(StatusCodes.UNAUTHORIZED, "사용자와 chatId가 일치하지 않습니다.");
+  }
+
+  const chats = type === "study" ? await findStudyChats(chatId) : await findCustomChats(chatId);
+
+  return chats;
+};
+
 export const generateResponse = async (userId: number, type: string, chatId: number, question: string) => {
   const history = type === "study" ? await findStudyChatHistory(userId) : await findCustomChatHistory(userId);
   const isValidChat = history.some((chat) => chat.id === chatId);
