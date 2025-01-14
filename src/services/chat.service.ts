@@ -9,6 +9,7 @@ import {
   findStudyChats,
   saveCustomChat,
   saveStudyChat,
+  updateCustom,
 } from "../models/chat.model";
 import { ChatHistory, ChatMessage } from "../types/chat";
 import { HttpException } from "../utils/httpException";
@@ -85,4 +86,9 @@ export const generateResponse = async (userId: number, type: string, chatId: num
   }
 
   return { role: "bot", content: response };
+};
+
+export const createCustomDB = async (userId: number, filePath: string) => {
+  const collectionName = await createChromaCollection(filePath);
+  await updateCustom(userId, collectionName);
 };

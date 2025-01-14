@@ -88,3 +88,10 @@ export const saveCustomChat = async (chatId: number, role: string, content: stri
     data: { historyId: chatId, role, content },
   });
 };
+
+export const updateCustom = async (userId: number, collectionName: string) => {
+  return await prisma.user.update({
+    where: { id: userId },
+    data: { custom: collectionName },
+  });
+};

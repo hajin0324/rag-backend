@@ -1,7 +1,7 @@
 import { Request, Response } from "express";
 import { StatusCodes } from "http-status-codes";
 import { TokenRequest } from "../middlewares/authMiddleware";
-import { generateResponse, getChatHistory, getChatMessages } from "../services/chat.service";
+import { createCustomDB, generateResponse, getChatHistory, getChatMessages } from "../services/chat.service";
 
 export const getHistory = async (req: Request, res: Response) => {
   const userId = (req as TokenRequest).token?.id;
@@ -49,4 +49,18 @@ export const getAnswer = async (req: Request, res: Response) => {
   const answer = await generateResponse(userId, type, chatId, question);
 
   res.status(StatusCodes.OK).json(answer);
+};
+
+export const uploadFile = async (req: Request, res: Response) => {
+  const userId = (req as TokenRequest).token?.id;
+  const filePath = req.file!.path;
+
+  if (!userId) {
+    res.status(StatusCodes.UNAUTHORIZED).json({ message: "올바르지 않은 사용자 입니다." });
+    return;
+  }
+
+  await createCustomDB(userId, filePath);
+
+  res.status(StatusCodes.OK).end();
 };

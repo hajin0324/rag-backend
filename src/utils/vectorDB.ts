@@ -2,9 +2,9 @@ import { ChromaClient } from "chromadb";
 import { OpenAIEmbeddings } from "@langchain/openai";
 import { HttpException } from "./httpException";
 import { StatusCodes } from "http-status-codes";
-import path from "path";
 import fs from "fs";
-import sqlite3 from "sqlite3";
+import csvParser from "csv-parser";
+import path from "path";
 
 const OPENAI_API_KEY = process.env.OPENAI_API_KEY;
 const CHROMA_SERVER_HOST = "http://localhost:8000";
@@ -15,7 +15,18 @@ class CustomOpenAIEmbeddings extends OpenAIEmbeddings {
   }
 }
 
-export const createChromaCollection = async (collectionName: string) => {
+export const parseCsvFile = async (filePath: string): Promise<any[]> => {
+  const rows: any[] = [];
+  return new Promise((resolve, reject) => {
+    fs.createReadStream(filePath)
+      .pipe(csvParser())
+      .on("data", (data) => rows.push(data))
+      .on("end", () => resolve(rows))
+      .on("error", (err) => reject(err));
+  });
+};
+
+export const createChromaCollection = async (filePath: string) => {
   try {
     const client = new ChromaClient({
       path: CHROMA_SERVER_HOST,
@@ -26,12 +37,27 @@ export const createChromaCollection = async (collectionName: string) => {
       openAIApiKey: process.env.OPENAI_API_KEY!,
     });
 
-    const collection = await client.getOrCreateCollection({
+    let collectionName = path.basename(filePath);
+    collectionName = path.parse(collectionName).name;
+
+    const collection = await client.createCollection({
       name: collectionName,
       embeddingFunction: embeddings,
     });
 
-    return collection;
+    const fileData = await parseCsvFile(filePath);
+    const validRows = fileData.filter((row) => row.content && row.content.trim() !== "");
+    if (validRows.length === 0) {
+      throw new HttpException(StatusCodes.BAD_REQUEST, "파일에 데이터가 존재하지 않습니다.");
+    }
+
+    await collection.add({
+      ids: fileData.map((_, index) => `id_${index}`),
+      embeddings: await embeddings.generate(fileData.map((row) => row.content)),
+      metadatas: validRows,
+    });
+
+    return collectionName;
   } catch (error) {
     throw new HttpException(StatusCodes.INTERNAL_SERVER_ERROR, `Error creating ChromaDB collection: ${error}`);
   }
