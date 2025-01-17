@@ -33,7 +33,7 @@ const mockUser = {
   password: "hashedPassword",
 };
 
-describe("POST /login", () => {
+describe("POST /api/v1/users/login", () => {
   afterEach(() => {
     jest.clearAllMocks();
   });

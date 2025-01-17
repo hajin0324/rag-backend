@@ -58,7 +58,14 @@ export const loginUser = async (email: string, password: string) => {
 };
 
 export const refreshAccessToken = async (refreshToken: string) => {
-  const payload = jwt.verify(refreshToken, REFRESH_JWT_SECRET) as { id: number; email: string };
+  let payload;
+
+  try {
+    payload = jwt.verify(refreshToken, REFRESH_JWT_SECRET) as { id: number; email: string };
+  } catch (error) {
+    throw new HttpException(StatusCodes.UNAUTHORIZED, "유효하지 않은 Refresh Token입니다.");
+  }
+
   const token = await findRefreshToken(refreshToken);
 
   if (!token) {

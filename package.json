@@ -7,7 +7,7 @@
     "build": "npx tsc",
     "start": "node dist/app.js",
     "dev": "nodemon src/app.ts",
-    "test": "jest"
+    "test": "jest --forceExit --detectOpenHandles  --watchAll --maxWorkers=1"
   },
   "author": "",
   "license": "ISC",
