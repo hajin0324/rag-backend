@@ -28,8 +28,3 @@ app.use(`${API_PREFIX}/users`, userRouter);
 app.use(`${API_PREFIX}/chats`, chatRouter);
 
 app.use(errorMiddleware);
-
-const PORT = process.env.PORT;
-app.listen(PORT, async () => {
-  console.log(`running on port ${PORT}`);
-});
